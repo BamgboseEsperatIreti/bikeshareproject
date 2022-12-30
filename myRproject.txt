@@ -1,0 +1,80 @@
+R PROJECT CODES
+
+# To install most of the packages needed for the project I install pacman package
+ install.packages("pacman")
+ pacman::p_load(ggplot2, tidyr, dplyr, tidyverse, data.table, "stringr", "zoo", "ROCR", "caret", "class", "gmodels", "randomForest")
+ library(pacman)
+ 
+ # I checked if those packages are installed
+ system.file(package = 'tidyverse')
+ 
+ # I imported all the dataset of the twelve months into R
+ bikejan2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2201.csv", header = TRUE, sep = ",")
+ bikefeb2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2202.csv", header = TRUE, sep = ",")
+ bikemar2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2203.csv", header = TRUE, sep = ",")
+ bikeapril022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2204.csv", header = TRUE, sep = ",")
+ bikemay2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2205.csv", header = TRUE, sep = ",")
+ bikejune2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2206.csv", header = TRUE, sep = ",")
+ bikejuly2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2207.csv", header = TRUE, sep = ",")
+ bikeaug2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2208.csv", header = TRUE, sep = ",")
+ bikesep2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2209.csv", header = TRUE, sep = ",")
+ bikeoct2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2210.csv", header = TRUE, sep = ",")
+ bikenov2022_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2211.csv", header = TRUE, sep = ",")
+ bikedec2021_df <- read.csv("C:/Users/User/Desktop/CASE STUDY PROJECT/trip2112.csv", header = TRUE, sep = ",")
+ 
+ # after reading all the dataset into R , I view each of the dataset to check how many no of columns they have.  
+ # Each have 13 columns.
+ View(bikejan2022_df)
+ View(bikefeb2022_df)
+ 
+ # I used rbind function to aggregate all the twelve dataset of each month into one large dataset.
+ 
+ combine_df <- rbind(bikejan2022_df, bikefeb2022_df, bikemar2022_df, bikeapril022_df, bikemay2022_df, bikejune2022_df,
+                 bikejuly2022_df, bikeaug2022_df, bikesep2022_df, bikeoct2022_df, bikenov2022_df, bikedec2021_df)
+ 
+ # I cleaned the large dataset by removing duplicate
+ 
+ cleancombined_df <- unique(combine_df)
+ 
+ # I splitted the 'started_at' column and 'ended-at' column, in order to get Date and Time column.
+ combine_df <- cleancombined_df
+ 
+ combine_df %>% separate(started_at, c("Date", "sHours"), sep =" ")% >%{.}> combine_df
+ combine_df %>% separate(ended_at, c("Date2", "eHours"), sep =" ")% >%{.}> combine_df
+ 
+ # I changed the columns names from Date to startDate, Date2 to endDate and sHours to startHours, eHours to endHours
+ 
+ colnames(combine_df)[colnames(combine_df)=="Date"]= "startDate"
+ 
+ colnames(combine_df)[colnames(combine_df)=="sHours"]= "startHours"
+ 
+ colnames(combine_df)[colnames(combine_df)=="Date2"]= "endDate"
+ 
+ colnames(combine_df)[colnames(combine_df)=="eHours"]= "endHours"
+ 
+ # I cleaned the large dataset by removing unnecessary columns from the dataset
+ 
+ cleancombined_df <- combine_df %>% select( -c(start_station_id, start_station_name, end_station_id, end_station_name, 
+                                               start_lat, start_lng, end_lat, end_lng))
+ # The cleaned dataset have 5 columns .
+ 
+ # I saved the file on my desktop system.
+  write.csv(cleancombined_df, file = " cleancombined_df.csv", row.names = FALSE)
+
+# To separate year from the column that have Timestamp column, that is 'startDate' and 'endDate'.
+  
+  cleancombined_df$year <- format(as.Date(cleancombined_df$startDate), "%y")
+  
+  #The year is the same for endDate column so i did not separate it because it will be duplication of column.
+  
+  # To separate month from the column that have Timestamp column, that is 'startDate' and 'endDate'.
+  cleancombined_df$month <- format(as.Date(cleancombined_df$startDate), "%m")
+  
+  # To separate week days from the column with timestamp that is 'startDate' and 'endDate'. They have the same 
+  # week days.
+  
+  cleancombined_df$week <- wday(cleancombined_df$startDate)
+  
+  # After getting 'cleancombined_df', and saving it to my desktop system, it was difficult to work on after reading
+  # the file. It was a challenge. So i used another tool,
+  #  postgreSQL to do the rest of the JOB.
