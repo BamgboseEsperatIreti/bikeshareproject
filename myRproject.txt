@@ -75,6 +75,6 @@ R PROJECT CODES
   
   cleancombined_df$week <- wday(cleancombined_df$startDate)
   
-  # After getting 'cleancombined_df', and saving it to my desktop system, it was difficult to work on after reading
-  # the file. It was a challenge. So i used another tool,
-  #  postgreSQL to do the rest of the JOB.
+  # After getting 'cleancombined_df', and saving it to my desktop system, 
+  # I decided to use another tool,
+  #  postgreSQL to do the rest of the JOB on pgAdmin4 platform.
