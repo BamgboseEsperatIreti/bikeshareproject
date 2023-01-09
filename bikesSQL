@@ -1,0 +1,55 @@
+/* I decided to split the dataset into first quarter ,second quarter, third and fourth quarter */
+/* I joined the first and second quarter, later joined third and fourth quarter to get a complete 
+and whole dataset of the 12 months , THE DATASET HAVE SAME DATA TYPES AND NUMBER OF COLUMNS*/
+
+CREATE TABLE bikegroup1
+AS
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM first_quarter
+UNION
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM second_quater;
+
+/* I combine the third and fourth quarter using UNION */
+
+CREATE TABLE bikegroup2
+AS
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM first_quarter
+UNION
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM second_quater;
+
+/* I joined bikegroup1 and bikegroup2 to get the whole/complete dataset of the 12 months */
+
+CREATE TABLE cyclistic
+AS
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM bikegroup1
+UNION
+SELECT ride_id, rideable_type, started_at, ended_at, member_casual
+FROM bikegroup2;
+
+/* Creation of a single dataset containing 12 months that will be used for the analysis.Extraction into
+separate column of weeks, months , minutes, and year*/
+
+CREATE TABLE completebikes
+AS
+SELECT * ,
+    EXTRACT(ISODOW FROM ended_at) AS ride_week, 
+	EXTRACT(MONTH FROM ended_at) AS ride_month,
+	EXTRACT(MINUTE FROM ended_at - started_at) AS ride_mins,
+	EXTRACT(YEAR FROM ended_at) AS ride_year FROM cyclistic;
+	
+/* I changed the date format in started_at and ended_at column  properly to Timestamp without Time zone 
+for easy manipulation and processing of the columns */
+ALTER TABLE table-name
+ALTER COLUMN started_at TYPE timestamp without time zone USING started_at:: timestamp without time zone
+ALTER COLUMN ended_at TYPE timestamp without time zone USING ended_at:: timestamp without time zone
+
+/* HOW TO COPY TABLES TO TEMP FOLDER IN C DRIVE*/
+
+COPY (SELECT * FROM completebikes) TO '/temp/ridesoutput.csv' WITH CSV HEADER;
+
+ 
+
